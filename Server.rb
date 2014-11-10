@@ -3,6 +3,7 @@ require 'thread'
 
 class Pool
   def initialize(size)
+ 
     @size = size
     @jobs = Queue.new
     
@@ -39,7 +40,8 @@ server = TCPServer.open(port)
 puts "Server connected"
 
 loop {    
-		threadPool.schedule do
+		threadPool.schedule do 
+			client = server.accept
 			read = client.gets
 			puts read
 
@@ -47,14 +49,15 @@ loop {
 				read = read.dump 	#get rid of '\n' at end of message
 				message="#{read} IP:#{client.peeraddr} Port:#{port} StudentID:11421218\n"
 				client.puts message
-			elsif read=="KILL_SERVICE\n"
+			elsif read == "KILL_SERVICE\n"
 				client.puts "Killing Server"
 				client.close
 				at_exit { threadPool.shutdown }
 				server.close
-			else #new message type
-				puts "new message type"
+				puts "Server closed"
+				exit
+			else
+				puts "new command"
 			end
 		end
-		server.close
 }

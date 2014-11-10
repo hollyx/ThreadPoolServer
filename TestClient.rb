@@ -5,7 +5,6 @@ port = ARGV[0]
 threads = []
 
 for i in 0..15
-	sleep 1
 	server = TCPSocket.open(hostname, port)
 		server.puts "HELO this is message #{i} \n"
 		puts "message sent to server"
