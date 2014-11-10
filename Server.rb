@@ -1,7 +1,7 @@
 require 'socket' 
 require 'thread'               
 
-port = 2000
+port = ARGV[0]
 server = TCPServer.open(port)   
 puts "Server connected"
 
@@ -17,7 +17,7 @@ loop {
 		puts read
 
 		if read[0,4] == "HELO"
-			read = read.dump
+			read = read.dump 	#get rid of '\n' at end of message
 			message="#{read} IP:#{client.peeraddr} Port:#{port} StudentID:11421218\n"
 			client.puts message
 		end
