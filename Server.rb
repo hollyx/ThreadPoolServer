@@ -34,30 +34,36 @@ class Pool
   end
 end              
 
-port = ARGV[0]
+ipAddress = ARGV[0]
+port = ARGV[1]
+studentId = ARGV[2]
+
 threadPool = Pool.new(3)
 server = TCPServer.open(port)   
 puts "Server connected"
 
 loop {    
-		threadPool.schedule do 
+		threadPool.schedule do
 			client = server.accept
-			read = client.gets
-			puts read
+			for i in 0..2 
+				read = client.gets
+				puts read
 
-			if read[0,4] == "HELO"
-				read = read.dump 	#get rid of '\n' at end of message
-				message="#{read} IP:#{client.peeraddr} Port:#{port} StudentID:11421218\n"
-				client.puts message
-			elsif read == "KILL_SERVICE\n"
-				client.puts "Killing Server"
-				client.close
-				at_exit { threadPool.shutdown }
-				server.close
-				puts "Server closed"
-				exit
-			else
-				puts "new command"
+				if read[0,4] == "HELO"
+					#read = read.dump 	#get rid of '\n' at end of message
+					message="#{read}IP:#{ipAddress}\nPort:#{port}\nStudentID:#{studentId}\n"
+					client.puts message
+				elsif read == "KILL_SERVICE\n"
+					puts "server kill requested"
+					client.puts "Killing Server"
+					client.close
+					at_exit { threadPool.shutdown }
+					server.close
+					puts "Server closed"
+					exit
+				else
+					puts "new command"
+				end
 			end
 		end
 }
